@@ -596,16 +596,16 @@ if __name__ == "__main__":
                     print (node.smiles, [x.smiles for x in node.neighbors])
                     print (node.label, len(node.cands))
 
-    def count():
-        cnt,n = 0,0
-        for s in sys.stdin:
-            s = s.split()[0]
-            tree = MolTree(s)
-            tree.recover()
-            tree.assemble()
-            for node in tree.nodes:
-                cnt += len(node.cands)
-            n += len(tree.nodes)
-            #print cnt * 1.0 / n
+    # def count():
+    #     cnt,n = 0,0
+    #     for s in sys.stdin:
+    #         s = s.split()[0]
+    #         tree = MolTree(s)
+    #         tree.recover()
+    #         tree.assemble()
+    #         for node in tree.nodes:
+    #             cnt += len(node.cands)
+    #         n += len(tree.nodes)
+    #         #print cnt * 1.0 / n
     
-    count()
+    # count()

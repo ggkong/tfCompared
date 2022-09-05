@@ -4,7 +4,7 @@ version:
 Author: 成凯阳
 Date: 2022-05-07 08:31:38
 LastEditors: 成凯阳
-LastEditTime: 2022-07-30 00:11:45
+LastEditTime: 2022-08-31 12:58:46
 '''
 
 
@@ -34,10 +34,11 @@ from Script.aae_script.opt_similarity import pretrain
 from Script.aae_script.opt_similarity import train_agents
 # from Utils.utils.train_utils import NoamLR,decrease_learning_rate
 # from Utils.utils.metric import fraction_valid_smiles
-# from torch.nn import CrossEntropyLoss
+from rdkit.Chem import PandasTools, QED, Descriptors, rdMolDescriptors
 from torch import  optim
 import pandas as pd
-
+from rdkit.Chem import QED
+from Utils.utils.metric import  logP,SA
 from Utils.torch_jtnn.chemutils import get_sanitize,decode_stereo
 from Utils.utils.metric import average_agg_tanimoto,fingerprints
 from rdkit import rdBase
@@ -217,12 +218,23 @@ def return_csv(generated_all_smiles,path,old):
     data.to_csv(path,header=True,index=False)#
     return valid_mol
 def save_pngs(args,x_smi,score):
+    df2 = pd.DataFrame(columns = ["smiles","qed","sa","logp","mw","hbd","hba","rob"])
+    df2.to_csv('./aae_script/renwuyi.csv',mode='a',header=["smiles","qed","sa","logp","mw","hbd","hba","rob"],index=False)#
     for ind,(i,s) in enumerate(zip(x_smi,score)):
 
         mol=Chem.MolFromSmiles(i)
-        lista = [i]
+        mw = np.round(Descriptors.MolWt(mol),1)
+        logp = np.round(Descriptors.MolLogP(mol),2)
+        hbd = rdMolDescriptors.CalcNumLipinskiHBD(mol)
+        hba = rdMolDescriptors.CalcNumLipinskiHBA(mol)
+        rob= rdMolDescriptors.CalcNumRotatableBonds(mol)
+     
+        qed= np.round(QED.qed(mol),2)
+        lista = [i,qed,SA(mol),logp,mw,hbd,hba,rob]
+        # lista = [i]
         datass = pd.DataFrame([lista])
         datass.to_csv('./aae_script/renwuyi.csv',mode='a',header=False,index=False)#
+
         data_di=args.tmp_dir
         s = ' {:.2f}'.format(s)
         filepath=os.path.join(data_di, '{}.png'.format(ind))
@@ -312,7 +324,7 @@ def train_agent_aae(input_param,args,
         # smila=list(set(smiles))
         # scores=diversity(smiles)
         score,scores=average_agg_tanimoto(fingerprints(old,n_jobs=1), fingerprints(smiles,n_jobs=1),device=device)
-        idx=list(np.where(score>=input_param['threshold'])[0])
+        idx=list(np.where(score>=input_param['threhold'])[0])
         temp_smi=[smiles[i] for i in idx if smiles[i] !='']
         smiless.extend(temp_smi)
         print(len(smiless))

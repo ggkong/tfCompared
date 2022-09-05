@@ -1,3 +1,4 @@
+from lib2to3.pgen2 import token
 from multiprocessing.spawn import old_main_modules
 import sys, os
 import multiprocessing
@@ -24,7 +25,7 @@ from aae_script.opt_similarity import train_agents
 # from torch.nn import CrossEntropyLoss
 from torch import  optim
 import pandas as pd
-
+from aae_script.optlogp import train_agent_opts
 from Utils.torch_jtnn.chemutils import get_sanitize,decode_stereo
 from Utils.utils.metric import average_agg_tanimoto,fingerprints
 from rdkit import rdBase
@@ -394,17 +395,60 @@ if __name__ == "__main__":
     with open(os.path.join(file_path,'aae_script/params.json'), 'r') as f:
 
         input_param= json.load(f)
-    with open(os.path.join(file_path,'charnn_Script/param.json'), 'r') as f:
+    # with open(os.path.join(file_path,'charnn_Script/param.json'), 'r') as f:
 
-        args_char= json.load(f)
+    #     args_char= json.load(f)
 
 
     #train_agents(query_fp=args.testmol,args=args,save_dir=args.save_dir,restore_agent_from=args.restore_prior_from,scoring_function_kwargs={})
     
     from multiprocessing import Process
     args_aae = argparse.Namespace(**args_aae)
-    args_char = argparse.Namespace(**args_char)
-    train_agent_aae(input_param=input_param,args=args_aae,restore_agent_from=args_aae.restore_agent_from,scoring_function_kwargs={})
+    with open(args_aae.vocab_path, "r") as f:
+           vocab_token = f.read().splitlines()
+    # args_char = argparse.Namespace(**args_char)
+    counts = len(open(input_param['testfile'],'rU').readlines())
+    print(vocab_token)
+    if counts==1:
+
+        with open(input_param['testfile'], "r") as f:
+           old = f.readlines()
+        old=[od[:-1] for od in old ]
+        old=old[0]
+        raw=old
+      
+        m=Chem.MolFromSmiles(old)
+        old=Chem.MolToSmiles(m, isomericSmiles=False)
+        print(old)
+        
+        
+        voc = Vocabulary(init_from_file=args_aae.vocab_path)
+        flag=False
+        
+        old='0,'+old
+        tokens=voc.tokenize( old)
+        tokens=tokens[1:-1]
+        print(tokens)
+        for i in tokens:
+            if i not in vocab_token:
+                print(i)
+                flag=True
+        if flag:
+            print('our platform not support this kind of smiles')
+            sys.exit(0)
+        else:
+            print('x')
+            train_agent_opts(input_param=input_param,query_fp=raw,args=args_aae,restore_agent_from=args_aae.restore_agent_from,scoring_function_kwargs={})
+
+        
+
+     
+
+
+        
+    else:
+        train_agent_aae(input_param=input_param,args=args_aae,restore_agent_from=args_aae.restore_agent_from,scoring_function_kwargs={})
+    #train_agent_aae(input_param=input_param,args=args_aae,restore_agent_from=args_aae.restore_agent_from,scoring_function_kwargs={})
 
     # p1 = Process(target=train_agent_aae, args=(input_param,args_aae,
     #             args_aae.restore_agent_from,{})) 
