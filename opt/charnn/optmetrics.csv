@@ -1,0 +1,11 @@
+,smiles
+0,O=C(Nc1cnn(Cc2ccc(Cl)c(Cl)c2)c1)c1ccccc1Br
+1,Cc1n[nH]c(C)c1NS(=O)(=O)c1ccc(N)cc1Br
+2,Cn1cnnc1SCC(=O)Nc1ccc(Br)cc1F
+3,O=c1cc(C(F)(F)F)c2c(Br)cccc2[nH]1
+4,N#CC(C(=O)C1CCCCO1)c1cccc(Br)c1
+5,Cc1ccc(Br)cc1S(=O)(=O)Nc1ccccn1
+6,O=C(CNc1ccc2ccccc2c1)NN=Cc1ccc(Br)c([N+](=O)[O-])c1
+7,Cn1c(SCC(=O)Nc2cccc(Br)c2)nnc1-c1ccccc1Cl
+8,O=C1CCCC2=C1C(c1cccc(Br)c1)C1=C([O-])CCCC1=N2
+9,CC1=C(C(=O)Nc2ccccc2C)C(c2ccc(Br)cc2)NC(=S)N1

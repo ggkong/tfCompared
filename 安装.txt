@@ -1,0 +1,10 @@
+conda create -n haha python==3.7
+conda install pytorch==1.8.0 cpuonly -c pytorch
+pip install Opennmt-py
+conda install tensorflow==1.15.0
+conda install -c rdkit rdkit
+pip install joblib
+pip install docopt
+pip install sklearn
+pip install networkx
+
